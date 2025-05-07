@@ -2,37 +2,38 @@ import { DataTypes, QueryInterface } from "sequelize";
 
 export default {
     up: async (queryInterface: QueryInterface) => {
-        await queryInterface.createTable("users", {
+        await queryInterface.createTable("tryout_sections", {
             id: {
                 type: DataTypes.UUID,
                 primaryKey: true,
                 allowNull: false,
             },
-            fullname: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            username: {
+            code: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
             },
-            email: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
+            description: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+                defaultValue: null,
             },
-            phoneNumber: {
+            title: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true,
             },
-            password: {
-                type: DataTypes.STRING,
-                allowNull: false,
+            order: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                defaultValue: null,
             },
             data: {
                 type: DataTypes.JSON,
+                allowNull: true,
+                defaultValue: null,
+            },
+            tag: {
+                type: DataTypes.STRING,
                 allowNull: true,
                 defaultValue: null,
             },
@@ -55,6 +56,6 @@ export default {
     },
 
     down: async (queryInterface: QueryInterface) => {
-        await queryInterface.dropTable("users");
+        await queryInterface.dropTable("tryout_sections");
     },
 };

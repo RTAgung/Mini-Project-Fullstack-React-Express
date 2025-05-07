@@ -4,6 +4,6 @@ export interface ExamModel {
     data: string;
     tag: string;
     active: boolean;
-    createAt: string;
-    updateAt: string;
+    createdAt: string;
+    updatedAt: string;
 }

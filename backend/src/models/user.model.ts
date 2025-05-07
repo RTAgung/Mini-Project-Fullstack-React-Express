@@ -1,8 +1,21 @@
-import { DataTypes, QueryInterface } from "sequelize";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import { UserModel } from "../types/user.type.js";
 
-export default {
-    up: async (queryInterface: QueryInterface) => {
-        await queryInterface.createTable("users", {
+export default (sequelize: Sequelize) => {
+    class User extends Model<UserModel> {
+        static associate(models: any) {
+            // Create associations
+            User.hasMany(models.Exam, {
+                foreignKey: "userId",
+                as: "exams",
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
+            });
+        }
+    }
+
+    User.init(
+        {
             id: {
                 type: DataTypes.UUID,
                 primaryKey: true,
@@ -51,10 +64,13 @@ export default {
                 allowNull: false,
                 defaultValue: new Date(),
             },
-        });
-    },
+        },
+        {
+            sequelize,
+            modelName: "User",
+            tableName: "users",
+        }
+    );
 
-    down: async (queryInterface: QueryInterface) => {
-        await queryInterface.dropTable("users");
-    },
+    return User;
 };

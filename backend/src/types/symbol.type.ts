@@ -4,6 +4,6 @@ export interface SymbolModel {
     name: string;
     characters: string;
     active: boolean;
-    createAt: string;
-    updateAt: string;
+    createdAt: string;
+    updatedAt: string;
 }

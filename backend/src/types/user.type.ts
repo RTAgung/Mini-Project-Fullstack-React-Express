@@ -7,6 +7,6 @@ export interface UserModel {
     password: string;
     active: boolean;
     data: string;
-    createAt: string;
-    updateAt: string;
+    createdAt: string;
+    updatedAt: string;
 }

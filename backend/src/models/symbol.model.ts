@@ -1,40 +1,32 @@
-import { DataTypes, QueryInterface } from "sequelize";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import { SymbolModel } from "../types/symbol.type.js";
 
-export default {
-    up: async (queryInterface: QueryInterface) => {
-        await queryInterface.createTable("users", {
+export default (sequelize: Sequelize) => {
+    class Symbol extends Model<SymbolModel> {
+        static associate(models: any) {
+            // Create associations
+        }
+    }
+
+    Symbol.init(
+        {
             id: {
                 type: DataTypes.UUID,
                 primaryKey: true,
                 allowNull: false,
             },
-            fullname: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            username: {
+            code: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
             },
-            email: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-            },
-            phoneNumber: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-            },
-            password: {
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            data: {
-                type: DataTypes.JSON,
-                allowNull: true,
-                defaultValue: null,
+            characters: {
+                type: DataTypes.STRING,
+                allowNull: false,
             },
             active: {
                 type: DataTypes.BOOLEAN,
@@ -51,10 +43,14 @@ export default {
                 allowNull: false,
                 defaultValue: new Date(),
             },
-        });
-    },
+        },
+        {
+            sequelize,
+            modelName: "Symbol",
+            tableName: "symbols",
+        }
+    );
 
-    down: async (queryInterface: QueryInterface) => {
-        await queryInterface.dropTable("users");
-    },
+    return Symbol;
 };
+
