@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AbstractCRUDModel from "../abstracts/model.abstract.js";
 import ExamService from "../services/exam.service.js";
+import { generateNewExamData } from "../helper/exam.helper.js";
 
 class ExamController extends AbstractCRUDModel {
     async getAll(req: Request, res: Response): Promise<any> {
@@ -37,8 +38,11 @@ class ExamController extends AbstractCRUDModel {
 
     async create(req: Request, res: Response): Promise<any> {
         try {
+            const tryoutSectionId = req.body.tryoutSectionId;
+            const data = await generateNewExamData(tryoutSectionId);
             const response = await ExamService.create(req.params.userId, {
                 ...req.body,
+                data,
             });
             res.status(201).json({
                 status: "success",

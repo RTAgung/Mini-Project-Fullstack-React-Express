@@ -1,12 +1,13 @@
 import { v4 as uuidV4 } from "uuid";
 import db from "../models/index.js";
+import { parseResponseData } from "../helper/map_response.helper.js";
 
 class TryoutSectionService {
     async getAll(): Promise<any> {
         try {
             const response = await db.TryoutSection.findAll({
                 order: [["createdAt", "DESC"]],
-            });
+            }).then((res: any) => res.map(parseResponseData));
             return response;
         } catch (error: any) {
             throw new Error("failed to fetch: " + error.message);
@@ -15,7 +16,10 @@ class TryoutSectionService {
 
     async getById(id: string): Promise<any> {
         try {
-            const response = await db.TryoutSection.findByPk(id);
+            const response = await db.TryoutSection.findByPk(id).then(
+                (res: any) => parseResponseData(res)
+            );
+
             return response;
         } catch (error: any) {
             throw new Error("failed to fetch: " + error.message);
@@ -25,10 +29,8 @@ class TryoutSectionService {
     async create(TryoutSection: any): Promise<any> {
         try {
             const id = uuidV4();
-            const response = await db.TryoutSection.create({
-                ...TryoutSection,
-                id,
-            });
+            await db.TryoutSection.create({ ...TryoutSection, id });
+            const response = await this.getById(id);
             return response;
         } catch (error: any) {
             throw new Error("failed to create: " + error.message);
@@ -46,7 +48,7 @@ class TryoutSectionService {
                 throw new Error("Not Found");
             }
 
-            const updatedTryoutSection = await db.TryoutSection.findByPk(id);
+            const updatedTryoutSection = await this.getById(id);
             return updatedTryoutSection;
         } catch (error: any) {
             throw new Error("failed to update: " + error.message);
@@ -55,7 +57,7 @@ class TryoutSectionService {
 
     async delete(id: string): Promise<any> {
         try {
-            const deletedTryoutSection = await db.TryoutSection.findByPk(id);
+            const deletedTryoutSection = await this.getById(id);
             const isSuccess = await db.TryoutSection.destroy({
                 where: { id },
             }).then((res: number) => res > 0);
