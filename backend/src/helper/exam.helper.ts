@@ -2,34 +2,6 @@ import TryoutSectionService from "../services/tryout_section.service.js";
 import SymbolService from "../services/symbol.service.js";
 import examConfig from "../config/exam.config.js";
 
-export async function generateNewExamData(
-    tryoutSectionId: string
-): Promise<any> {
-    const tryoutSection = await TryoutSectionService.getById(tryoutSectionId);
-    const symbols = await SymbolService.getAll().then((res: any) => {
-        return res[Math.floor(Math.random() * res.length)].characters;
-    });
-
-    const duration = await getExamDuration(tryoutSection);
-    const endTimeTest = new Date();
-    endTimeTest.setMinutes(endTimeTest.getMinutes() + duration);
-
-    return {
-        status: "in-progress",
-        type: "accuracy_test",
-        referenceId: tryoutSection.id,
-        accuracyTest: tryoutSection.data,
-        symbols: symbols,
-        sessions: await generateNewSessions(tryoutSection.data, symbols),
-        duration: duration,
-        intervalTime: examConfig.accuracyTest.intervalSessionTime,
-        endTimeTest: endTimeTest.toISOString(),
-        totalScore: null,
-        currentSession: 0,
-        currentQuestion: 0,
-    };
-}
-
 async function getExamDuration(tryoutSection: any): Promise<number> {
     const { durationPerSessions, numberOfSessions } = tryoutSection.data;
     const totalIntervalTime =
@@ -58,6 +30,8 @@ async function generateNewSessions(
         sessions.push({
             characters,
             status: "not-started",
+            title: "Session " + (i + 1),
+            accuracyScore: 0.0,
             totalCorrect: 0,
             totalIncorrect: 0,
             endTime: null,
@@ -87,26 +61,18 @@ async function pickRandomCharacters(str: string, n: number): Promise<string> {
     return characters.join("");
 }
 
-async function generateNewQuestion(
-    totalQuestionPerSessions: number,
-    characters: string
-): Promise<any> {
-    const questions = [];
-    let shuffledString = characters;
-    for (let i = 0; i < totalQuestionPerSessions; i++) {
-        shuffledString = await shuffleString(shuffledString);
-        const { question, trueAnswer } = await pickTrueAnswerAndOptions(
-            shuffledString
-        );
-        questions.push({
-            question: question,
-            option: shuffledString,
-            trueAnswer: trueAnswer,
-            userAnswer: null,
-        });
-    }
+async function generateNewQuestion(characters: string): Promise<any> {
+    const shuffledString = await shuffleString(characters);
+    const { question, trueAnswer } = await pickTrueAnswerAndQuestion(
+        shuffledString
+    );
 
-    return questions;
+    return {
+        question: question,
+        option: shuffledString,
+        trueAnswer: trueAnswer,
+        userAnswer: null,
+    };
 }
 
 async function shuffleString(str: string): Promise<string> {
@@ -118,7 +84,7 @@ async function shuffleString(str: string): Promise<string> {
     return arr.join(""); // Convert back to string
 }
 
-async function pickTrueAnswerAndOptions(shuffledStr: string): Promise<{
+async function pickTrueAnswerAndQuestion(shuffledStr: string): Promise<{
     question: string;
     trueAnswer: string;
 }> {
@@ -129,3 +95,82 @@ async function pickTrueAnswerAndOptions(shuffledStr: string): Promise<{
 
     return { question, trueAnswer };
 }
+
+class ExamHelper {
+    async generateNewExamData(tryoutSectionId: string): Promise<any> {
+        const tryoutSection = await TryoutSectionService.getById(
+            tryoutSectionId
+        );
+        const symbols = await SymbolService.getAll().then((res: any) => {
+            return res[Math.floor(Math.random() * res.length)].characters;
+        });
+
+        const duration = await getExamDuration(tryoutSection);
+        const endTimeTest = new Date();
+        endTimeTest.setMinutes(endTimeTest.getMinutes() + duration);
+
+        return {
+            status: "in-progress",
+            type: "accuracy_test",
+            referenceId: tryoutSection.id,
+            accuracyTest: tryoutSection.data,
+            symbols: symbols,
+            sessions: await generateNewSessions(tryoutSection.data, symbols),
+            duration: duration,
+            intervalTime: examConfig.accuracyTest.intervalSessionTime,
+            endTimeTest: endTimeTest.toISOString(),
+            totalAccuracyScore: 0.0,
+            currentSession: 0,
+            currentQuestion: 0,
+        };
+    }
+
+    async startSession(data: any): Promise<any> {
+        const sessions = data.sessions;
+
+        sessions[data.currentSession].status = "in-progress";
+        const endTimeTest = new Date();
+        endTimeTest.setMinutes(
+            endTimeTest.getMinutes() + data.accuracyTest.durationPerSessions
+        );
+        sessions[data.currentSession].endTime = endTimeTest;
+        sessions[data.currentSession].questions.push(
+            await generateNewQuestion(sessions[data.currentSession].characters)
+        );
+        return {
+            ...data,
+            sessions: sessions,
+        };
+    }
+
+    async nextQuestion(data: any, answer: string): Promise<any> {
+        const sessions = data.sessions;
+        const currentSession = sessions[data.currentSession];
+        const currentQuestion = currentSession.questions[data.currentQuestion];
+
+        currentQuestion.userAnswer = answer;
+        if (answer === currentQuestion.trueAnswer) {
+            currentSession.totalCorrect += 1;
+        } else {
+            currentSession.totalIncorrect += 1;
+        }
+        currentSession.accuracyScore =
+            currentSession.totalCorrect /
+            (currentSession.totalCorrect + currentSession.totalIncorrect);
+
+        currentSession.questions[data.currentQuestion] = currentQuestion;
+        currentSession.questions.push(
+            await generateNewQuestion(currentSession.characters)
+        );
+
+        sessions[data.currentSession] = currentSession;
+
+        data.currentQuestion += 1;
+        return {
+            ...data,
+            sessions: sessions,
+        };
+    }
+}
+
+export default new ExamHelper();
