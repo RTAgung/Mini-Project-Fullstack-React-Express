@@ -14,6 +14,36 @@ class ExamService {
         }
     }
 
+    async getAllByUserId(userId: string): Promise<any> {
+        try {
+            const response = await db.Exam.findAll({
+                order: [["createdAt", "DESC"]],
+                where: { userId },
+            }).then((res: any) => res.map(parseResponseData));
+            return response;
+        } catch (error: any) {
+            throw new Error("failed to fetch: " + error.message);
+        }
+    }
+
+    async getAllByUserIdAndStatus(
+        userId: string,
+        status: string
+    ): Promise<any> {
+        try {
+            const response = await db.Exam.findAll({
+                order: [["createdAt", "DESC"]],
+                where: { userId },
+            }).then((res: any) => res.map(parseResponseData));
+            const filteredResponse = response.filter((exam: any) => {
+                return exam.data?.status === status;
+            });
+            return filteredResponse;
+        } catch (error: any) {
+            throw new Error("failed to fetch: " + error.message);
+        }
+    }
+
     async getById(id: string): Promise<any> {
         try {
             const response = await db.Exam.findByPk(id).then((res: any) =>

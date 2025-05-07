@@ -20,6 +20,24 @@ class ExamController extends AbstractCRUDModel {
         }
     }
 
+    async getAllByUserId(req: Request, res: Response): Promise<any> {
+        try {
+            const response = await ExamService.getAllByUserId(
+                req.params.userId
+            );
+            res.status(200).json({
+                status: "success",
+                message: "Exams fetched successfully",
+                data: response,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                status: "error",
+                message: error.message,
+            });
+        }
+    }
+
     async getById(req: Request, res: Response): Promise<any> {
         try {
             const response = await ExamService.getById(req.params.id);
@@ -65,6 +83,29 @@ class ExamController extends AbstractCRUDModel {
             res.status(200).json({
                 status: "success",
                 message: "Exam updated successfully",
+                data: response,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                status: "error",
+                message: error.message,
+            });
+        }
+    }
+
+    async filteredStatus(
+        req: Request,
+        res: Response,
+        status: string
+    ): Promise<any> {
+        try {
+            const response = await ExamService.getAllByUserIdAndStatus(
+                req.params.userId,
+                status
+            );
+            res.status(200).json({
+                status: "success",
+                message: "Exams fetched successfully",
                 data: response,
             });
         } catch (error: any) {
