@@ -127,16 +127,22 @@ class ExamHelper {
 
     async startSession(data: any): Promise<any> {
         const sessions = data.sessions;
+        const currentSession = sessions[data.currentSession];
+        if (currentSession === undefined) {
+            throw new Error("Session not found");
+        }
 
-        sessions[data.currentSession].status = "in-progress";
+        currentSession.status = "in-progress";
         const endTimeTest = new Date();
         endTimeTest.setMinutes(
             endTimeTest.getMinutes() + data.accuracyTest.durationPerSessions
         );
-        sessions[data.currentSession].endTime = endTimeTest;
-        sessions[data.currentSession].questions.push(
-            await generateNewQuestion(sessions[data.currentSession].characters)
+        currentSession.endTime = endTimeTest;
+        currentSession.questions.push(
+            await generateNewQuestion(currentSession.characters)
         );
+
+        sessions[data.currentSession] = currentSession;
         return {
             ...data,
             sessions: sessions,
@@ -147,6 +153,9 @@ class ExamHelper {
         const sessions = data.sessions;
         const currentSession = sessions[data.currentSession];
         const currentQuestion = currentSession.questions[data.currentQuestion];
+        if (currentQuestion === undefined) {
+            throw new Error("Question not found");
+        }
 
         currentQuestion.userAnswer = answer;
         if (answer === currentQuestion.trueAnswer) {
@@ -154,9 +163,11 @@ class ExamHelper {
         } else {
             currentSession.totalIncorrect += 1;
         }
-        currentSession.accuracyScore =
+
+        const accuracyScore =
             currentSession.totalCorrect /
             (currentSession.totalCorrect + currentSession.totalIncorrect);
+        currentSession.accuracyScore = accuracyScore.toFixed(3);
 
         currentSession.questions[data.currentQuestion] = currentQuestion;
         currentSession.questions.push(
@@ -166,6 +177,36 @@ class ExamHelper {
         sessions[data.currentSession] = currentSession;
 
         data.currentQuestion += 1;
+        return {
+            ...data,
+            sessions: sessions,
+        };
+    }
+
+    async endSession(data: any): Promise<any> {
+        const sessions = data.sessions;
+        const currentSession = sessions[data.currentSession];
+        if (currentSession === undefined) {
+            throw new Error("Session not found");
+        }
+
+        currentSession.questions.pop();
+        currentSession.status = "completed";
+        sessions[data.currentSession] = currentSession;
+
+        if (data.currentSession === data.accuracyTest.numberOfSessions - 1) {
+            data.status = "completed";
+            let totalAccuracyScore = 0.0;
+            data.sessions.forEach((session: any) => {
+                totalAccuracyScore += session.accuracyScore;
+            });
+            data.totalAccuracyScore = (
+                totalAccuracyScore / data.accuracyTest.numberOfSessions
+            ).toFixed(3);
+        }
+
+        data.currentQuestion = 0;
+        data.currentSession += 1;
         return {
             ...data,
             sessions: sessions,

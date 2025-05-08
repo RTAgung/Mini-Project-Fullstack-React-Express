@@ -15,6 +15,7 @@ router.get("/complete/:userId", (res, req) =>
 router.post("/:userId", ExamController.create);
 router.post("/start_session/:id", ExamController.startSession);
 router.post("/next_question/:id", ExamController.nextQuestion);
+router.post("/end_session/:id", ExamController.endSession);
 router.put("/:id", ExamController.update);
 router.delete("/:id", ExamController.delete);
 

@@ -98,6 +98,29 @@ class ExamController extends AbstractCRUDModel {
         }
     }
 
+    async endSession(req: Request, res: Response): Promise<any> {
+        try {
+            const data = await ExamService.getById(req.params.id).then(
+                (res) => res.data
+            );
+            const updatedData = await ExamHelper.endSession(data);
+            const response = await ExamService.update(req.params.id, {
+                ...req.body,
+                data: updatedData,
+            });
+            res.status(200).json({
+                status: "success",
+                message: "Session ended successfully",
+                data: response,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                status: "error",
+                message: error.message,
+            });
+        }
+    }
+
     async nextQuestion(req: Request, res: Response): Promise<any> {
         try {
             const data = await ExamService.getById(req.params.id).then(
