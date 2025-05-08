@@ -3,12 +3,15 @@ import UserRouter from "./user.route.js";
 import SymbolRouter from "./symbol.route.js";
 import TryoutSectionRouter from "./tryout_section.route.js";
 import ExamRouter from "./exam.route.js";
+import AuthRouter from "./auth.route.js";
+import { tokenValidator } from "../middlewares/validators/token.validator.js";
 
 const router = express.Router();
 
-router.use("/users", UserRouter);
-router.use("/symbols", SymbolRouter);
-router.use("/tryout_sections", TryoutSectionRouter);
-router.use("/exams", ExamRouter);
+router.use("/users", tokenValidator, UserRouter);
+router.use("/symbols", tokenValidator, SymbolRouter);
+router.use("/tryout_sections", tokenValidator, TryoutSectionRouter);
+router.use("/exams", tokenValidator, ExamRouter);
+router.use("/auth", AuthRouter);
 
 export default router;
