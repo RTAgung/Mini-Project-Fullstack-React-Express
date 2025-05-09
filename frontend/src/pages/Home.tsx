@@ -8,7 +8,7 @@ function Home() {
     const isLogin = false;
     const handleButtonClick = () => {
         if (isLogin) {
-            navigate("/dashboard");
+            navigate("/exam");
         } else {
             navigate("/login");
         }

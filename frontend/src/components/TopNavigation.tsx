@@ -6,7 +6,7 @@ import {
     User,
     UserPlus,
 } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, NavLink } from "react-router-dom";
 import useAuthStore from "../stores/auth.store";
 
 export function TopNavigation() {
@@ -31,29 +31,47 @@ export function TopNavigation() {
 
                     {isLoggedIn && (
                         <div className="sm:flex items-center ml-5 gap-4">
-                            <Link
+                            <NavLink
                                 to="/exam"
-                                className="text-sm font-medium text-gray-300 hover:text-cyber transition-colors hidden sm:inline"
+                                className={({ isActive }) =>
+                                    `text-sm font-medium transition-colors hidden sm:inline ${
+                                        isActive
+                                            ? "text-cyber"
+                                            : "text-gray-300 hover:text-cyber"
+                                    }`
+                                }
                             >
                                 My Exams
-                            </Link>
-                            <Link
+                            </NavLink>
+                            <NavLink
                                 to="/tryout"
-                                className="text-sm font-medium text-gray-300 hover:text-cyber transition-colors hidden sm:inline"
+                                className={({ isActive }) =>
+                                    `text-sm font-medium transition-colors hidden sm:inline ${
+                                        isActive
+                                            ? "text-cyber"
+                                            : "text-gray-300 hover:text-cyber"
+                                    }`
+                                }
                             >
                                 Tryout Sections
-                            </Link>
+                            </NavLink>
                         </div>
                     )}
                 </div>
 
                 <div className="flex items-center space-x-2 ml-auto">
-                    <GraduationCap color="#00b4d8" />
+                    <GraduationCap
+                        color="#00b4d8"
+                        className="hidden sm:inline"
+                    />
                     <span className="text-sm md:text-base hidden sm:inline">
                         Training Center
                     </span>
                 </div>
 
+                <button className="sm:hidden flex items-center text-gray-300 hover:text-cyber transition-colors">
+                    <Menu />
+                </button>
                 {isLoggedIn ? (
                     <>
                         <div className="hidden sm:flex items-center gap-2 bg-gray-700 px-3 py-1 ml-3 rounded-lg">
@@ -63,7 +81,7 @@ export function TopNavigation() {
                             </span>
                         </div>
                         <div className="relative ml-3">
-                            <div className="hidden md:flex items-center gap-2">
+                            <div className="hidden sm:flex items-center gap-2">
                                 <button
                                     onClick={() => logout()}
                                     className="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 rounded-md px-3 bg-red-500 hover:bg-red-500/90 text-white"
@@ -75,9 +93,6 @@ export function TopNavigation() {
                     </>
                 ) : (
                     <div className="relative ml-3">
-                        <button className="md:hidden flex items-center text-gray-300 hover:text-cyber transition-colors">
-                            <Menu />
-                        </button>
                         <div className="hidden md:flex items-center gap-3">
                             <button
                                 onClick={() => navigate("/login")}
