@@ -80,7 +80,7 @@ function Tryout() {
                                         <Timer size={18} />
                                         <span className="text-sm font-medium">
                                             Duration:{" "}
-                                            {tryout.data?.duration ?? 0}
+                                            {tryout.data?.duration ?? 0} minutes
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">

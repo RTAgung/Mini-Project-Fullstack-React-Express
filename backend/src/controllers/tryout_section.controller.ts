@@ -44,6 +44,7 @@ class TryoutSectionController extends AbstractCRUDModel {
                 examConfig.accuracyTest.intervalSessionTime *
                     data.numberOfSessions +
                 examConfig.accuracyTest.timeTolerance;
+            console.log(data);
             const response = await TryoutSectionService.create({
                 ...req.body,
                 data,
