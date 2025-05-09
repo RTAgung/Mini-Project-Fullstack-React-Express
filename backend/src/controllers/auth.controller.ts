@@ -28,15 +28,8 @@ class AuthController {
             const token = jwt.sign(
                 { ___: encodedString },
                 env.JWT_SECRET_KEY ?? "",
-                { expiresIn: "1M" }
+                { expiresIn: "30d" }
             );
-
-            res.cookie("session", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                maxAge: 30 * 24 * 60 * 60 * 1000, // 1 month
-                sameSite: "strict",
-            });
 
             res.status(200).json({
                 status: "success",
