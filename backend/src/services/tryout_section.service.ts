@@ -6,7 +6,10 @@ class TryoutSectionService {
     async getAll(): Promise<any> {
         try {
             const response = await db.TryoutSection.findAll({
-                order: [["createdAt", "DESC"]],
+                order: [
+                    ["order", "ASC"],
+                    ["createdAt", "DESC"],
+                ],
             }).then((res: any) => res.map(parseResponseData));
             return response;
         } catch (error: any) {

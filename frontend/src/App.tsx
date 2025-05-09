@@ -4,22 +4,44 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
-import Dashboard from "./pages/Exam";
+import Exam from "./pages/Exam";
 import AuthRoute from "./components/AuthRoute";
+import Tryout from "./pages/Tryout";
+import { Toaster } from "react-hot-toast";
 
 function App() {
     return (
         <div className="min-h-screen bg-black text-white">
+            <Toaster
+                position="bottom-right"
+                reverseOrder={false}
+                toastOptions={{
+                    style: {
+                        background: "#1f2937", // Tailwind gray-800
+                        color: "#f9fafb", // Tailwind gray-50
+                        border: "1px solid #374151", // Tailwind gray-700
+                    },
+                    success: {
+                        iconTheme: {
+                            primary: "#10b981", // Tailwind green-500
+                            secondary: "#1f2937",
+                        },
+                    },
+                    error: {
+                        iconTheme: {
+                            primary: "#ef4444", // Tailwind red-500
+                            secondary: "#1f2937",
+                        },
+                    },
+                }}
+            />
             <BrowserRouter>
                 <Routes>
                     <Route element={<ProtectedRoute />}>
-                        <Route path="/exam" element={<Dashboard />}></Route>
-                        <Route path="/tryout" element={<Dashboard />}></Route>
-                        <Route path="/exam/:id" element={<Dashboard />}></Route>
-                        <Route
-                            path="/session/:id"
-                            element={<Dashboard />}
-                        ></Route>
+                        <Route path="/exam" element={<Exam />}></Route>
+                        <Route path="/tryout" element={<Tryout />}></Route>
+                        <Route path="/exam/:id" element={<Exam />}></Route>
+                        <Route path="/session/:id" element={<Exam />}></Route>
                     </Route>
                     <Route element={<AuthRoute />}>
                         <Route path="/login" element={<Login />}></Route>

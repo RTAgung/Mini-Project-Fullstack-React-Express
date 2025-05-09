@@ -4,6 +4,7 @@ import { Lock, LogIn, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuthStore from "../stores/auth.store";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Login() {
     const navigate = useNavigate();
@@ -20,6 +21,12 @@ function Login() {
             navigate("/exam");
         }
     }, [isLoggedIn, navigate]);
+
+    useEffect(() => {
+        if (message) {
+            toast.error(message);
+        }
+    }, [message]);
 
     const handleChange = (e: { target: { name: any; value: any } }) => {
         const { name, value } = e.target;

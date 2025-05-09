@@ -40,4 +40,33 @@ export default class ExamApi {
             throw new Error(error.message);
         }
     }
+
+    static async create(tryoutId: string) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Token not found");
+            }
+
+            const tokenData = await AuthApi.decodeToken({ token });
+            const userId = tokenData.data.id;
+
+            const response = await fetch(`${this.URL_API}/${userId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ tryoutSectionId: tryoutId }),
+            });
+            const json = await response.json();
+            if (json?.status === "error") {
+                throw new Error(json.message);
+            }
+            return json;
+        } catch (error: any) {
+            console.error(error);
+            throw new Error(error.message);
+        }
+    }
 }

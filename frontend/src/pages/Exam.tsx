@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CircleX } from "lucide-react";
 import BasePage from "./BasePage";
 import { useEffect, useState } from "react";

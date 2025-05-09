@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AbstractCRUDModel from "../abstracts/model.abstract.js";
 import TryoutSectionService from "../services/tryout_section.service.js";
+import examConfig from "../config/exam.config.js";
 
 class TryoutSectionController extends AbstractCRUDModel {
     async getAll(req: Request, res: Response): Promise<any> {
@@ -37,7 +38,16 @@ class TryoutSectionController extends AbstractCRUDModel {
 
     async create(req: Request, res: Response): Promise<any> {
         try {
-            const response = await TryoutSectionService.create({ ...req.body });
+            const data = req.body.data;
+            data.duration =
+                data.durationPerSessions * data.numberOfSessions +
+                examConfig.accuracyTest.intervalSessionTime *
+                    data.numberOfSessions +
+                examConfig.accuracyTest.timeTolerance;
+            const response = await TryoutSectionService.create({
+                ...req.body,
+                data,
+            });
             res.status(201).json({
                 status: "success",
                 message: "Tryout section created successfully",
@@ -87,4 +97,3 @@ class TryoutSectionController extends AbstractCRUDModel {
 }
 
 export default new TryoutSectionController();
-
