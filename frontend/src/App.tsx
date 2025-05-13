@@ -8,10 +8,11 @@ import Exam from "./pages/Exam";
 import AuthRoute from "./components/AuthRoute";
 import Tryout from "./pages/Tryout";
 import { Toaster } from "react-hot-toast";
+import ExamDetail from "./pages/ExamDetail";
 
 function App() {
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-gray-900 text-white">
             <Toaster
                 position="bottom-right"
                 reverseOrder={false}
@@ -40,7 +41,10 @@ function App() {
                     <Route element={<ProtectedRoute />}>
                         <Route path="/exam" element={<Exam />}></Route>
                         <Route path="/tryout" element={<Tryout />}></Route>
-                        <Route path="/exam/:id" element={<Exam />}></Route>
+                        <Route
+                            path="/exam/:id"
+                            element={<ExamDetail />}
+                        ></Route>
                         <Route path="/session/:id" element={<Exam />}></Route>
                     </Route>
                     <Route element={<AuthRoute />}>

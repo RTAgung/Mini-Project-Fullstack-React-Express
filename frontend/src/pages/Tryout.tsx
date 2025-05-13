@@ -6,6 +6,7 @@ import useTryoutStore from "../stores/tryout.store";
 import { useEffect, useState } from "react";
 import ExamApi from "../services/api/exam.api";
 import toast from "react-hot-toast";
+import TryoutApi from "../services/api/tryout.api";
 
 const getDifficultyStyle = (level: string) => {
     switch (level.toLowerCase()) {

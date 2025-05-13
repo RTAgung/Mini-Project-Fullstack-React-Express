@@ -113,7 +113,7 @@ class ExamHelper {
             status: "in-progress",
             type: "accuracy_test",
             title: tryoutSection.title,
-            descriptions: tryoutSection.description,
+            description: tryoutSection.description,
             referenceId: tryoutSection.id,
             accuracyTest: tryoutSection.data,
             symbols: symbols,
