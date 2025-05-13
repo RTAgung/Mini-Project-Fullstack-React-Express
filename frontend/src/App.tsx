@@ -10,6 +10,7 @@ import Tryout from "./pages/Tryout";
 import { Toaster } from "react-hot-toast";
 import ExamDetail from "./pages/ExamDetail";
 import Session from "./pages/Session";
+import ReviewSession from "./pages/ReviewSession";
 
 function App() {
     return (
@@ -49,6 +50,10 @@ function App() {
                         <Route
                             path="/exam/:id/session"
                             element={<Session />}
+                        ></Route>
+                        <Route
+                            path="/exam/:id/session/review/:sessionIdx/:questionIdx"
+                            element={<ReviewSession />}
                         ></Route>
                     </Route>
                     <Route element={<AuthRoute />}>

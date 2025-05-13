@@ -11,6 +11,12 @@ export default function Session() {
         useSessionStore();
     const [countdown, setCountdown] = useState("00:00:00");
 
+    useEffect(() => {
+        if (session.status !== undefined && session.status !== "in-progress") {
+            navigate(`/exam/${id}`, { replace: true });
+        }
+    }, [id, navigate, session.status]);
+
     const handleFinishSession = useCallback(async () => {
         if (id) {
             await endSession(id);
@@ -71,7 +77,7 @@ export default function Session() {
                         </div>
                         <button
                             onClick={handleFinishSession}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                            className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
                         >
                             Finish Session
                         </button>

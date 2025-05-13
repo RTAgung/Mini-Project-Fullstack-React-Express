@@ -33,6 +33,29 @@ const initialState = {
     message: null,
 };
 
+const constructExamData: any = (data: any) => {
+    const tryoutData = data.accuracyTest;
+    const sessions = data.sessions.map((session: any) => {
+        return {
+            ...session,
+            duration: tryoutData.durationPerSessions,
+            isShowButton:
+                data.status === "in-progress" ||
+                (data.status === "completed" && session.status === "completed"),
+        };
+    });
+    return {
+        exam: {
+            ...data,
+            totalSession: tryoutData.numberOfSessions,
+        },
+        sessions:
+            data.status == "completed"
+                ? sessions
+                : [sessions[data.currentSession]],
+    };
+};
+
 const useExamDetailStore = create<ExamDetailState>((set) => ({
     ...initialState,
 
@@ -41,22 +64,8 @@ const useExamDetailStore = create<ExamDetailState>((set) => ({
         try {
             const response = await ExamApi.fetchDataById(id);
             const data = response.data.data;
-            const tryoutData = data.accuracyTest;
-            const sessions = data.sessions.map((session: any) => {
-                return {
-                    ...session,
-                    duration: tryoutData.durationPerSessions,
-                };
-            });
             set({
-                exam: {
-                    ...data,
-                    totalSession: tryoutData.numberOfSessions,
-                },
-                sessions:
-                    data.status == "completed"
-                        ? sessions
-                        : [sessions[data.currentSession]],
+                ...constructExamData(data),
             });
         } catch (error: any) {
             set({ isError: true, message: error.message });
@@ -82,22 +91,8 @@ const useExamDetailStore = create<ExamDetailState>((set) => ({
         try {
             const response = await ExamApi.endExam(id);
             const data = response.data.data;
-            const tryoutData = data.accuracyTest;
-            const sessions = data.sessions.map((session: any) => {
-                return {
-                    ...session,
-                    duration: tryoutData.durationPerSessions,
-                };
-            });
             set({
-                exam: {
-                    ...data,
-                    totalSession: tryoutData.numberOfSessions,
-                },
-                sessions:
-                    data.status == "completed"
-                        ? sessions
-                        : [sessions[data.currentSession]],
+                ...constructExamData(data),
             });
         } catch (error: any) {
             set({ isError: true, message: error.message });
