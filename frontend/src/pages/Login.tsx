@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 function Login() {
     const navigate = useNavigate();
-    const { isLoggedIn, isLoadingLogin, isErrorLogin, message, login } =
+    const { isSuccessLogin, isLoadingLogin, isErrorLogin, message, login } =
         useAuthStore();
     const [formData, setFormData] = useState({
         email: "",
@@ -17,10 +17,10 @@ function Login() {
     });
 
     useEffect(() => {
-        if (isLoggedIn) {
+        if (isSuccessLogin) {
             navigate("/exam");
         }
-    }, [isLoggedIn, navigate]);
+    }, [isSuccessLogin, navigate]);
 
     useEffect(() => {
         if (message) {
@@ -36,9 +36,9 @@ function Login() {
         });
     };
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        login(formData.email, formData.password);
+        await login(formData.email, formData.password);
     };
 
     return (

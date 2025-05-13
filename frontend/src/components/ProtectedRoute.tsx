@@ -11,12 +11,11 @@ const ProtectedRoute = () => {
     }, [checkLogin]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (hasCheckLogin && (!isLoggedIn || !token)) {
+        if (hasCheckLogin && !isLoggedIn) {
             logout();
             setShouldRedirect(true);
         }
-    }, [hasCheckLogin, isLoggedIn, logout]);
+    }, [hasCheckLogin, logout, isLoggedIn]);
 
     if (!hasCheckLogin) {
         return null; // or a loading spinner

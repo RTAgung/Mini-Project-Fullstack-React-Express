@@ -1,6 +1,12 @@
 import jwt from "jsonwebtoken";
 
-export function getTokenData(token: any): any {
+export interface UserPayload {
+    id: string;
+    email: string;
+    username: string;
+}
+
+export function getTokenData(token: any): UserPayload {
     const decodedToken = jwt.decode(token);
 
     if (

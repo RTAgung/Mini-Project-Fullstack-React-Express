@@ -3,7 +3,7 @@ import useAuthStore from "../stores/auth.store";
 import { useEffect, useState } from "react";
 
 const AuthRoute = () => {
-    const { isLoggedIn, logout, checkLogin, hasCheckLogin } = useAuthStore();
+    const { isLoggedIn, checkLogin, hasCheckLogin } = useAuthStore();
     const [shouldRedirect, setShouldRedirect] = useState(false);
 
     useEffect(() => {
@@ -11,11 +11,10 @@ const AuthRoute = () => {
     }, [checkLogin]);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (hasCheckLogin && (isLoggedIn || token)) {
+        if (hasCheckLogin && isLoggedIn) {
             setShouldRedirect(true);
         }
-    }, [hasCheckLogin, isLoggedIn, logout]);
+    }, [hasCheckLogin, isLoggedIn]);
 
     if (!hasCheckLogin) {
         return null; // or a loading spinner

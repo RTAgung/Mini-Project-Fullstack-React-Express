@@ -22,9 +22,8 @@ class ExamController extends AbstractCRUDModel {
 
     async getAllByUserId(req: Request, res: Response): Promise<any> {
         try {
-            const response = await ExamService.getAllByUserId(
-                req.params.userId
-            );
+            const user: any = req.user;
+            const response = await ExamService.getAllByUserId(user.id);
             res.status(200).json({
                 status: "success",
                 message: "Exams fetched successfully",
@@ -56,9 +55,10 @@ class ExamController extends AbstractCRUDModel {
 
     async create(req: Request, res: Response): Promise<any> {
         try {
+            const user: any = req.user;
             const tryoutSectionId = req.body.tryoutSectionId;
             const data = await ExamHelper.generateNewExamData(tryoutSectionId);
-            const response = await ExamService.create(req.params.userId, {
+            const response = await ExamService.create(user.id, {
                 ...req.body,
                 data,
             });
@@ -199,8 +199,9 @@ class ExamController extends AbstractCRUDModel {
         status: string
     ): Promise<any> {
         try {
+            const user: any = req.user;
             const response = await ExamService.getAllByUserIdAndStatus(
-                req.params.userId,
+                user.id,
                 status
             );
             res.status(200).json({

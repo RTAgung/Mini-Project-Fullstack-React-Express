@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { getTokenData } from "../../helper/token.helper.js";
 
 export const tokenValidator = async (
     req: Request,
@@ -7,7 +8,7 @@ export const tokenValidator = async (
     next: NextFunction
 ) => {
     try {
-        const token = req.header("Authorization")?.replace("Bearer ", "");
+        const token = req.cookies.token;
         if (!token) {
             res.status(401).json({
                 status: "error",
@@ -25,9 +26,21 @@ export const tokenValidator = async (
             return;
         }
 
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+            httpOnly: true,
+            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production",
+        });
+        req.user = getTokenData(token);
         next();
     } catch (error: any) {
         if (error.name === "TokenExpiredError") {
+            res.clearCookie("token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "lax",
+            });
             res.status(401).json({
                 status: "error",
                 message: "Token has expired",
@@ -36,6 +49,11 @@ export const tokenValidator = async (
         }
 
         if (error.name === "JsonWebTokenError") {
+            res.clearCookie("token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "lax",
+            });
             res.status(401).json({
                 status: "error",
                 message: "Invalid token",

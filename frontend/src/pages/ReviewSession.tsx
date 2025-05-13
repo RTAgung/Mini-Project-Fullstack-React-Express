@@ -169,7 +169,8 @@ export default function ReviewSession() {
                             navigate(
                                 `/exam/${id}/session/review/${sessionIdx}/${
                                     questionIdx - 1
-                                }`
+                                }`,
+                                { replace: true }
                             )
                         }
                         className={`px-4 py-2 rounded-lg text-sm font-medium ${
@@ -187,7 +188,8 @@ export default function ReviewSession() {
                             navigate(
                                 `/exam/${id}/session/review/${sessionIdx}/${
                                     questionIdx + 1
-                                }`
+                                }`,
+                                { replace: true }
                             )
                         }
                         className={`px-4 py-2 rounded-lg text-sm font-medium ${

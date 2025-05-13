@@ -31,6 +31,13 @@ class AuthController {
                 { expiresIn: "30d" }
             );
 
+            res.cookie("token", token, {
+                expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+                httpOnly: true,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+            });
+
             res.status(200).json({
                 status: "success",
                 message: "Login successful",
@@ -44,9 +51,9 @@ class AuthController {
         }
     }
 
-    async decode(req: Request, res: Response): Promise<any> {
+    async check(req: Request, res: Response): Promise<any> {
         try {
-            const tokenData = getTokenData(req.body.token);
+            const tokenData = getTokenData(req.cookies.token);
 
             res.status(200).json({
                 status: "success",
@@ -69,6 +76,25 @@ class AuthController {
                 status: "success",
                 message: "User registered successfully",
                 data: response,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                status: "error",
+                message: error.message,
+            });
+        }
+    }
+
+    async logout(req: Request, res: Response): Promise<any> {
+        try {
+            res.clearCookie("token", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "lax",
+            });
+            res.status(200).json({
+                status: "success",
+                message: "User logout successfully",
             });
         } catch (error: any) {
             res.status(500).json({
