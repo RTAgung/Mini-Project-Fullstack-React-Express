@@ -10,12 +10,11 @@ interface TryoutState {
     fetchTryouts: () => Promise<void>;
 }
 
-const initialState: TryoutState = {
+const initialState = {
     tryouts: [],
     isLoading: false,
     isError: false,
     message: null,
-    fetchTryouts: async () => {},
 };
 
 const useTryoutStore = create<TryoutState>((set) => ({

@@ -166,10 +166,10 @@ class ExamHelper {
             currentSession.totalIncorrect += 1;
         }
 
-        const accuracyScore =
+        const accuracyScore: number =
             currentSession.totalCorrect /
             (currentSession.totalCorrect + currentSession.totalIncorrect);
-        currentSession.accuracyScore = accuracyScore.toFixed(3);
+        currentSession.accuracyScore = parseFloat(accuracyScore.toFixed(3));
 
         currentSession.questions[data.currentQuestion] = currentQuestion;
         currentSession.questions.push(
@@ -192,27 +192,37 @@ class ExamHelper {
             throw new Error("Session not found");
         }
 
-        currentSession.questions.pop();
+        if (
+            currentSession.questions[currentSession.questions.length - 1]
+                .userAnswer === null
+        ) {
+            currentSession.questions.pop();
+        }
         currentSession.status = "completed";
         sessions[data.currentSession] = currentSession;
 
         if (data.currentSession === data.accuracyTest.numberOfSessions - 1) {
-            data.status = "completed";
-            let totalAccuracyScore = 0.0;
-            data.sessions.forEach((session: any) => {
-                totalAccuracyScore += session.accuracyScore;
-            });
-            data.totalAccuracyScore = (
-                totalAccuracyScore / data.accuracyTest.numberOfSessions
-            ).toFixed(3);
+            data = await this.endExam(data);
+        } else {
+            data.currentSession += 1;
         }
 
         data.currentQuestion = 0;
-        data.currentSession += 1;
         return {
             ...data,
             sessions: sessions,
         };
+    }
+    async endExam(data: any): Promise<any> {
+        data.status = "completed";
+        let totalAccuracyScore: number = 0.0;
+        data.sessions.forEach((session: any) => {
+            totalAccuracyScore += session.accuracyScore;
+        });
+        const accuracyScore: number =
+            totalAccuracyScore / data.accuracyTest.numberOfSessions;
+        data.totalAccuracyScore = parseFloat(accuracyScore.toFixed(3));
+        return data;
     }
 }
 

@@ -48,6 +48,7 @@ export default (sequelize: Sequelize) => {
             sequelize,
             modelName: "Symbol",
             tableName: "symbols",
+            timestamps: true,
         }
     );
 

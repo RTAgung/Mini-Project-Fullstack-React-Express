@@ -64,6 +64,7 @@ export default (sequelize: Sequelize) => {
             sequelize,
             modelName: "TryoutSection",
             tableName: "tryout_sections",
+            timestamps: true,
         }
     );
 

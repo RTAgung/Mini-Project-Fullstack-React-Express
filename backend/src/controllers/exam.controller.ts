@@ -77,18 +77,25 @@ class ExamController extends AbstractCRUDModel {
 
     async startSession(req: Request, res: Response): Promise<any> {
         try {
-            const data = await ExamService.getById(req.params.id).then(
-                (res) => res.data
-            );
+            const getResponse = await ExamService.getById(req.params.id);
+            const data = getResponse.data;
+            if (data.sessions[data.currentSession].status !== "not-started") {
+                res.status(200).json({
+                    status: "success",
+                    message: "Session already started",
+                    data: getResponse,
+                });
+                return;
+            }
+
             const updatedData = await ExamHelper.startSession(data);
-            const response = await ExamService.update(req.params.id, {
-                ...req.body,
+            const updatedResponse = await ExamService.update(req.params.id, {
                 data: updatedData,
             });
             res.status(200).json({
                 status: "success",
                 message: "Session started successfully",
-                data: response,
+                data: updatedResponse,
             });
         } catch (error: any) {
             res.status(500).json({
@@ -105,12 +112,33 @@ class ExamController extends AbstractCRUDModel {
             );
             const updatedData = await ExamHelper.endSession(data);
             const response = await ExamService.update(req.params.id, {
-                ...req.body,
                 data: updatedData,
             });
             res.status(200).json({
                 status: "success",
                 message: "Session ended successfully",
+                data: response,
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                status: "error",
+                message: error.message,
+            });
+        }
+    }
+
+    async endExam(req: Request, res: Response): Promise<any> {
+        try {
+            const data = await ExamService.getById(req.params.id).then(
+                (res) => res.data
+            );
+            const updatedData = await ExamHelper.endExam(data);
+            const response = await ExamService.update(req.params.id, {
+                data: updatedData,
+            });
+            res.status(200).json({
+                status: "success",
+                message: "Exam ended successfully",
                 data: response,
             });
         } catch (error: any) {

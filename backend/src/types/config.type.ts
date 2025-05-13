@@ -8,4 +8,5 @@ export interface DBConfig {
     pool?: any;
     logging?: any;
     use_env_variable?: string;
+    timezone?: string;
 }

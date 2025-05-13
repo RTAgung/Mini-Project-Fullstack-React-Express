@@ -41,6 +41,113 @@ export default class ExamApi {
         }
     }
 
+    static async fetchDataById(id: string) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Token not found");
+            }
+
+            const response = await fetch(`${this.URL_API}/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const json = await response.json();
+            if (json?.status === "error") {
+                throw new Error(json.message);
+            }
+            return json;
+        } catch (error: any) {
+            console.error(error);
+            throw new Error(error.message);
+        }
+    }
+
+    static async startSession(id: string) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Token not found");
+            }
+
+            const response = await fetch(
+                `${this.URL_API}/start_session/${id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            const json = await response.json();
+            if (json?.status === "error") {
+                throw new Error(json.message);
+            }
+            return json;
+        } catch (error: any) {
+            console.error(error);
+            throw new Error(error.message);
+        }
+    }
+
+    static async nextQuestion(id: string, answer: string) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Token not found");
+            }
+
+            const response = await fetch(
+                `${this.URL_API}/next_question/${id}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ answer }),
+                }
+            );
+            const json = await response.json();
+            if (json?.status === "error") {
+                throw new Error(json.message);
+            }
+            return json;
+        } catch (error: any) {
+            console.error(error);
+            throw new Error(error.message);
+        }
+    }
+
+    static async endSession(id: string) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Token not found");
+            }
+
+            const response = await fetch(`${this.URL_API}/end_session/${id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const json = await response.json();
+            if (json?.status === "error") {
+                throw new Error(json.message);
+            }
+            return json;
+        } catch (error: any) {
+            console.error(error);
+            throw new Error(error.message);
+        }
+    }
+
     static async create(tryoutId: string) {
         try {
             const token = localStorage.getItem("token");
@@ -58,6 +165,31 @@ export default class ExamApi {
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ tryoutSectionId: tryoutId }),
+            });
+            const json = await response.json();
+            if (json?.status === "error") {
+                throw new Error(json.message);
+            }
+            return json;
+        } catch (error: any) {
+            console.error(error);
+            throw new Error(error.message);
+        }
+    }
+
+    static async endExam(id: string) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Token not found");
+            }
+
+            const response = await fetch(`${this.URL_API}/end/${id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
             });
             const json = await response.json();
             if (json?.status === "error") {

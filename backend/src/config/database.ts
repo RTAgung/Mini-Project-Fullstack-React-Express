@@ -21,6 +21,7 @@ const config: Record<string, DBConfig> = {
             idle: 10000,
         },
         logging: console.log,
+        timezone: '+07:00',
     },
     production: {
         use_env_variable: process.env.DB_URL_PRODUCTION ?? "",
@@ -29,6 +30,7 @@ const config: Record<string, DBConfig> = {
         database: process.env.DB_DATABASE_PRODUCTION ?? configData.production.database,
         host: process.env.DB_HOST_PRODUCTION ?? configData.production.host,
         dialect: process.env.DB_DIALECT_PRODUCTION ?? configData.production.dialect,
+        timezone: '+07:00',
     },
 };
 

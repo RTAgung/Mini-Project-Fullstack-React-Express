@@ -11,12 +11,11 @@ interface ExamState {
     fetchExams: (filter: string) => Promise<void>;
 }
 
-const initialState: ExamState = {
+const initialState = {
     exams: [],
     isLoading: false,
     isError: false,
     message: null,
-    fetchExams: async () => {},
 };
 
 const useExamStore = create<ExamState>((set) => ({
