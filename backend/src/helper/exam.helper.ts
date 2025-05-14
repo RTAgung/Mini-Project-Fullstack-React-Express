@@ -63,15 +63,11 @@ async function pickRandomCharacters(str: string, n: number): Promise<string> {
 
 async function generateNewQuestion(characters: string): Promise<any> {
     const shuffledString = await shuffleString(characters);
-    const { question, trueAnswer } = await pickTrueAnswerAndQuestion(
-        shuffledString
-    );
+    const question = await pickQuestion(shuffledString);
 
     return {
         question: question,
         option: shuffledString,
-        trueAnswer: trueAnswer,
-        userAnswer: null,
     };
 }
 
@@ -84,16 +80,36 @@ async function shuffleString(str: string): Promise<string> {
     return arr.join(""); // Convert back to string
 }
 
-async function pickTrueAnswerAndQuestion(shuffledStr: string): Promise<{
-    question: string;
-    trueAnswer: string;
-}> {
+async function getMissingSymbol(
+    sequence: string,
+    options: string
+): Promise<string | null> {
+    const seqArr = sequence.split("");
+    const optArr = options.split("");
+
+    // Create a frequency map from the sequence
+    const freqMap: Record<string, number> = {};
+    for (const char of seqArr) {
+        freqMap[char] = (freqMap[char] || 0) + 1;
+    }
+
+    // Find the character in options that is not in sequence
+    for (const char of optArr) {
+        if (!freqMap[char]) {
+            return char;
+        }
+        freqMap[char]--;
+    }
+
+    return null; // in case nothing is missing
+}
+
+async function pickQuestion(shuffledStr: string): Promise<string> {
     const randomIndex = Math.floor(Math.random() * shuffledStr.length);
-    const trueAnswer = shuffledStr[randomIndex];
     const question =
         shuffledStr.slice(0, randomIndex) + shuffledStr.slice(randomIndex + 1);
 
-    return { question, trueAnswer };
+    return question;
 }
 
 class ExamHelper {
@@ -160,6 +176,10 @@ class ExamHelper {
         }
 
         currentQuestion.userAnswer = answer;
+        currentQuestion.trueAnswer = await getMissingSymbol(
+            currentQuestion.question,
+            currentQuestion.option
+        );
         if (answer === currentQuestion.trueAnswer) {
             currentSession.totalCorrect += 1;
         } else {
@@ -194,7 +214,7 @@ class ExamHelper {
 
         if (
             currentSession.questions[currentSession.questions.length - 1]
-                .userAnswer === null
+                .userAnswer === undefined
         ) {
             currentSession.questions.pop();
         }
@@ -202,7 +222,7 @@ class ExamHelper {
         sessions[data.currentSession] = currentSession;
 
         if (data.currentSession === data.accuracyTest.numberOfSessions - 1) {
-            data = await this.endExam(data);
+            data = await this.endExam(data, true);
         } else {
             data.currentSession += 1;
         }
@@ -213,7 +233,29 @@ class ExamHelper {
             sessions: sessions,
         };
     }
-    async endExam(data: any): Promise<any> {
+    async endExam(data: any, hasEndSession = false): Promise<any> {
+        if (!hasEndSession) {
+            const sessions = data.sessions;
+            const currentSession = sessions[data.currentSession];
+
+            if (
+                currentSession !== undefined &&
+                currentSession.status === "in-progress"
+            ) {
+                if (
+                    currentSession.questions[
+                        currentSession.questions.length - 1
+                    ].userAnswer === undefined
+                ) {
+                    currentSession.questions.pop();
+                }
+                currentSession.status = "completed";
+                sessions[data.currentSession] = currentSession;
+                data.sessions = sessions;
+            }
+        }
+        data.currentQuestion = 0;
+
         data.status = "completed";
         let totalAccuracyScore: number = 0.0;
         data.sessions.forEach((session: any) => {
