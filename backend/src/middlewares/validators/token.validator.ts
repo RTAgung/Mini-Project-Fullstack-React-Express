@@ -43,7 +43,7 @@ export const tokenValidator = async (
             });
             res.status(401).json({
                 status: "error",
-                message: "Token has expired",
+                message: "Unauthorized",
             });
             return;
         }
@@ -56,7 +56,7 @@ export const tokenValidator = async (
             });
             res.status(401).json({
                 status: "error",
-                message: "Invalid token",
+                message: "Unauthorized",
             });
             return;
         }

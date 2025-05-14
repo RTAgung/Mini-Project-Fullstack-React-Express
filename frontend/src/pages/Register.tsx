@@ -19,6 +19,7 @@ function Register() {
         email: "",
         phoneNumber: "",
         password: "",
+        confirmPassword: "",
     });
 
     useEffect(() => {
@@ -47,8 +48,6 @@ function Register() {
             if (isSuccess) {
                 toast.success("Register success");
                 navigate("/login", { replace: true });
-            } else {
-                toast.error("Register failed");
             }
         });
     };
@@ -148,6 +147,24 @@ function Register() {
                                 type="password"
                                 name="password"
                                 value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                            Confirm Password
+                        </label>
+                        <div className="flex p-1 items-center border mt-2 border-gray-700 rounded-md focus-within:ring-2 focus-within:ring-cyber">
+                            <Lock className="mx-2" width={20} height={20} />
+                            <input
+                                className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-base md:text-sm border-0 focus-visible:ring-0"
+                                placeholder="********"
+                                type="password"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
                                 onChange={handleChange}
                                 required
                             />

@@ -68,7 +68,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
         } catch (error: any) {
             set({
                 isErrorLogin: true,
-                message: "Login failed",
+                message: error.message,
             });
             console.error(error);
         } finally {
@@ -89,7 +89,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
             set({
                 isLoadingRegister: false,
                 isErrorRegister: true,
-                message: "Register failed",
+                message: error.message,
             });
             console.error(error);
             return false;
