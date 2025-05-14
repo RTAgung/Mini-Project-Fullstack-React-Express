@@ -1,4 +1,13 @@
-import { Loader2, Mail, Lock, User, Phone, UserPlus } from "lucide-react";
+import {
+    Loader2,
+    Mail,
+    Lock,
+    User,
+    Phone,
+    UserPlus,
+    Eye,
+    EyeOff,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuthStore from "../stores/auth.store";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,6 +30,10 @@ function Register() {
         password: "",
         confirmPassword: "",
     });
+
+    // State for controlling password visibility
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -144,12 +157,25 @@ function Register() {
                             <input
                                 className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-base md:text-sm border-0 focus-visible:ring-0"
                                 placeholder="********"
-                                type="password"
+                                type={passwordVisible ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setPasswordVisible(!passwordVisible)
+                                }
+                                className="text-gray-500 hover:text-cyber mx-2 focus:outline-none"
+                            >
+                                {passwordVisible ? (
+                                    <EyeOff width={20} height={20} />
+                                ) : (
+                                    <Eye width={20} height={20} />
+                                )}
+                            </button>
                         </div>
                     </div>
 
@@ -162,12 +188,29 @@ function Register() {
                             <input
                                 className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-base md:text-sm border-0 focus-visible:ring-0"
                                 placeholder="********"
-                                type="password"
+                                type={
+                                    confirmPasswordVisible ? "text" : "password"
+                                }
                                 name="confirmPassword"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 required
                             />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setConfirmPasswordVisible(
+                                        !confirmPasswordVisible
+                                    )
+                                }
+                                className="text-gray-500 hover:text-cyber mx-2 focus:outline-none"
+                            >
+                                {confirmPasswordVisible ? (
+                                    <EyeOff width={20} height={20} />
+                                ) : (
+                                    <Eye width={20} height={20} />
+                                )}
+                            </button>
                         </div>
                     </div>
 

@@ -1,4 +1,4 @@
-import { Lock, LogIn, Loader2, Mail } from "lucide-react";
+import { Lock, LogIn, Loader2, Mail, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuthStore from "../stores/auth.store";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,11 +8,15 @@ function Login() {
     const navigate = useNavigate();
     const { isLoggedIn, isLoadingLogin, isErrorLogin, message, login } =
         useAuthStore();
+
     const [formData, setFormData] = useState({
         email: "",
         password: "",
         rememberMe: false,
     });
+
+    // State for controlling password visibility
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -81,12 +85,26 @@ function Login() {
                             <input
                                 className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-base md:text-sm border-0 focus-visible:ring-0"
                                 placeholder="**********"
-                                type="password"
+                                type={passwordVisible ? "text" : "password"}
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
                             />
+                            {/* Password visibility toggle button */}
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setPasswordVisible(!passwordVisible)
+                                }
+                                className="text-gray-500 hover:text-cyber mx-2 focus:outline-none"
+                            >
+                                {passwordVisible ? (
+                                    <EyeOff width={20} height={20} />
+                                ) : (
+                                    <Eye width={20} height={20} />
+                                )}
+                            </button>
                         </div>
                     </div>
 
