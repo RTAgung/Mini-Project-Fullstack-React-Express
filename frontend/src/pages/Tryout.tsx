@@ -4,7 +4,7 @@ import { CircleGauge, Loader2, SquareLibrary, Timer } from "lucide-react";
 import useTryoutStore from "../stores/tryout.store";
 import { useEffect, useState } from "react";
 import ExamApi from "../services/api/exam.api";
-import toast from "react-hot-toast";
+import { toast } from "../utils/toast.util";
 
 const getDifficultyStyle = (level: string) => {
     switch (level.toLowerCase()) {
@@ -35,8 +35,8 @@ function Tryout() {
             setCreatingExamId(tryoutId);
             const response = await ExamApi.create(tryoutId);
             if (response.data.id) {
-                navigate(`/exam/${response.data.id}`);
                 toast.success(response.message);
+                navigate(`/exam/${response.data.id}`);
             } else {
                 throw new Error("Failed to create exam.");
             }

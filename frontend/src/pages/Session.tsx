@@ -3,6 +3,7 @@ import BasePage from "./BasePage";
 import { Loader2, Timer } from "lucide-react";
 import useSessionStore from "../stores/session.store";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "../utils/toast.util";
 
 export default function Session() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Session() {
         question,
         isLoading,
         isError,
+        message,
         isLoadingAnswer,
         selectedOption,
         fetchSession,
@@ -32,6 +34,12 @@ export default function Session() {
             navigate(`/exam/${id}`, { replace: true });
         }
     }, [id, endSession, navigate]);
+
+    useEffect(() => {
+        if (message) {
+            toast.warning(message);
+        }
+    }, [message]);
 
     useEffect(() => {
         if (isError) {
@@ -113,7 +121,7 @@ export default function Session() {
                     <div className="bg-gray-700 p-4 rounded-lg">
                         <div className="text-sm text-gray-300 mb-1">Score</div>
                         <div className="text-xl font-bold text-white">
-                            {session.accuracyScore * 100}%
+                            {(session.accuracyScore * 100).toFixed(1)}%
                         </div>
                         <div className="flex gap-4 mt-2 text-sm">
                             <span className="text-green-400">

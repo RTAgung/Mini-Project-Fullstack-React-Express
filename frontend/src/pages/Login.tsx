@@ -2,7 +2,7 @@ import { Lock, LogIn, Loader2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuthStore from "../stores/auth.store";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { toast } from "../utils/toast.util";
 
 function Login() {
     const navigate = useNavigate();

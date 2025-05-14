@@ -70,11 +70,6 @@ function App() {
                 </Routes>
             </BrowserRouter>
         </div>
-        // <div className='min-h-screen flex flex-col'>
-        //   <header className='fixed top-0 inset-x-0 flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-gray-800 z-50'>
-        //     <h1>Halo</h1>
-        //   </header>
-        // </div>
     );
 }
 

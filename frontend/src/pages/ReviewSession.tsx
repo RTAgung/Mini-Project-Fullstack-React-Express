@@ -76,7 +76,7 @@ export default function ReviewSession() {
                     <div className="bg-gray-700 p-4 rounded-lg">
                         <div className="text-sm text-gray-300 mb-1">Score</div>
                         <div className="text-xl font-bold text-white">
-                            {session.accuracyScore * 100}%
+                            {(session.accuracyScore * 100).toFixed(1)}%
                         </div>
                         <div className="flex gap-4 mt-2 text-sm">
                             <span className="text-green-400">

@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import useExamDetailStore from "../stores/exam_detail.store";
 import BasePage from "./BasePage";
 import useSessionStore from "../stores/session.store";
+import { toast } from "../utils/toast.util";
 
 export default function ExamDetail() {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function ExamDetail() {
         sessions,
         isLoading,
         isError,
+        message,
         fetchExamDetail,
         startSession,
         endExam,
@@ -29,6 +31,12 @@ export default function ExamDetail() {
             await endExam(id);
         }
     }, [id, endExam]);
+
+    useEffect(() => {
+        if (message) {
+            toast.warning(message);
+        }
+    }, [message]);
 
     useEffect(() => {
         if (isError) {
@@ -171,7 +179,7 @@ export default function ExamDetail() {
                         <div className="sm:text-right">
                             <p className="text-gray-400">Total Score</p>
                             <p className="text-3xl font-bold text-cyber">
-                                {exam.totalAccuracyScore * 100}%
+                                {(exam.totalAccuracyScore * 100).toFixed(1)}%
                             </p>
                         </div>
                     </div>
@@ -219,9 +227,8 @@ export default function ExamDetail() {
                                     <span className="text-gray-400">
                                         Score:{" "}
                                     </span>
-                                    {session.accuracyScore * 100}%
+                                    {(session.accuracyScore * 100).toFixed(1)}%
                                 </p>
-
                                 <p>
                                     <span className="text-gray-400">
                                         Correct:{" "}

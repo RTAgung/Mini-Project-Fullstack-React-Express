@@ -72,7 +72,7 @@ const useSessionStore = create<SessionState>((set, get) => ({
                 options:
                     session.questions[data.currentQuestion].option.split(""),
             };
-            set({ session, question, hasUpdatedBefore: true });
+            set({ ...initialData, session, question, hasUpdatedBefore: true });
         } else {
             set({ ...initialData });
         }
@@ -107,7 +107,7 @@ const useSessionStore = create<SessionState>((set, get) => ({
         set({ isError: false, message: null });
         try {
             await ExamApi.endSession(id);
-            set({ ...initialData });
+            set({ ...initialData, message: "Session has ended" });
         } catch (error: any) {
             set({ isError: true, message: error.message });
         }

@@ -93,6 +93,7 @@ const useExamDetailStore = create<ExamDetailState>((set) => ({
             const data = response.data.data;
             set({
                 ...constructExamData(data),
+                message: "Exam has ended",
             });
         } catch (error: any) {
             set({ isError: true, message: error.message });
