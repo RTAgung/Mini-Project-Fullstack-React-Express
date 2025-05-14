@@ -12,6 +12,7 @@ import ExamDetail from "./pages/ExamDetail";
 import Session from "./pages/Session";
 import ReviewSession from "./pages/ReviewSession";
 import Register from "./pages/Register";
+import NotFound from "./pages/NotFound";
 
 function App() {
     return (
@@ -68,6 +69,7 @@ function App() {
                     <Route element={<PublicRoute />}>
                         <Route path="/" element={<Home />}></Route>
                     </Route>
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
         </div>
