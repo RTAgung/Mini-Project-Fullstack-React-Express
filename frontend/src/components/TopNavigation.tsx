@@ -5,13 +5,25 @@ import {
     Menu,
     User,
     UserPlus,
+    Loader2,
 } from "lucide-react";
 import { useNavigate, Link, NavLink } from "react-router-dom";
+import { useState } from "react";
 import useAuthStore from "../stores/auth.store";
 
 export function TopNavigation() {
     const navigate = useNavigate();
     const { isLoggedIn, userName, logout } = useAuthStore();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            await logout();
+        } finally {
+            setIsLoggingOut(false);
+        }
+    };
 
     return (
         <header className="fixed top-0 inset-x-0 flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-gray-800 z-50">
@@ -72,6 +84,7 @@ export function TopNavigation() {
                 <button className="sm:hidden flex items-center text-gray-300 hover:text-cyber transition-colors">
                     <Menu />
                 </button>
+
                 {isLoggedIn ? (
                     <>
                         <div className="hidden sm:flex items-center gap-2 bg-gray-700 px-3 py-1 ml-3 rounded-lg">
@@ -83,10 +96,21 @@ export function TopNavigation() {
                         <div className="relative ml-3">
                             <div className="hidden sm:flex items-center gap-2">
                                 <button
-                                    onClick={() => logout()}
+                                    onClick={handleLogout}
                                     className="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 rounded-md px-3 bg-red-500 hover:bg-red-500/90 text-white"
+                                    disabled={isLoggingOut}
                                 >
-                                    <LogOut /> Logout
+                                    {isLoggingOut ? (
+                                        <>
+                                            <Loader2 className="animate-spin" />
+                                            Logging out...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <LogOut />
+                                            Logout
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>

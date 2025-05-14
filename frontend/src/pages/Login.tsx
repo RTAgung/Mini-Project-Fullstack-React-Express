@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { Lock, LogIn, Mail } from "lucide-react";
+import { Lock, LogIn, Loader2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuthStore from "../stores/auth.store";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +6,7 @@ import toast from "react-hot-toast";
 
 function Login() {
     const navigate = useNavigate();
-    const { isSuccessLogin, isLoadingLogin, isErrorLogin, message, login } =
+    const { isLoggedIn, isLoadingLogin, isErrorLogin, message, login } =
         useAuthStore();
     const [formData, setFormData] = useState({
         email: "",
@@ -17,26 +15,26 @@ function Login() {
     });
 
     useEffect(() => {
-        if (isSuccessLogin) {
+        if (isLoggedIn) {
             navigate("/exam");
         }
-    }, [isSuccessLogin, navigate]);
+    }, [isLoggedIn, navigate]);
 
     useEffect(() => {
-        if (message) {
+        if (isErrorLogin && message) {
             toast.error(message);
         }
-    }, [message]);
+    }, [isErrorLogin, message]);
 
-    const handleChange = (e: { target: { name: any; value: any } }) => {
+    const handleChange = (e: { target: { name: string; value: string } }) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]: value,
-        });
+        }));
     };
 
-    const handleSubmit = async (e: { preventDefault: () => void }) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         await login(formData.email, formData.password);
     };
@@ -58,23 +56,14 @@ function Login() {
                         Login untuk melanjutkan
                     </p>
                 </div>
-                <form className="space-y-4 w-full" action="">
+
+                <form className="space-y-4 w-full" onSubmit={handleSubmit}>
                     <div className="space-y-2">
-                        <label
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            htmlFor=":r0:-form-item"
-                        >
-                            Email
-                        </label>
-                        <div
-                            className="flex p-1 items-center border mt-2 border-gray-700 rounded-md focus-within:ring-2 focus-within:ring-cyber focus-within:border-transparent"
-                            id=":r0:-form-item"
-                            aria-describedby=":r0:-form-item-description"
-                            aria-invalid="false"
-                        >
+                        <label className="text-sm font-medium">Email</label>
+                        <div className="flex p-1 items-center border mt-2 border-gray-700 rounded-md focus-within:ring-2 focus-within:ring-cyber">
                             <Mail className="mx-2" width={20} height={20} />
                             <input
-                                className="flex h-10 w-full rounded-md border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border-0 focus-visible:ring-0"
+                                className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-base md:text-sm border-0 focus-visible:ring-0"
                                 placeholder="email@domain.com"
                                 type="email"
                                 name="email"
@@ -84,55 +73,56 @@ function Login() {
                             />
                         </div>
                     </div>
+
                     <div className="space-y-2">
-                        <label
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            htmlFor=":r0:-form-item"
-                        >
-                            Password
-                        </label>
-                        <div
-                            className="flex p-1 items-center border mt-2 border-gray-700 rounded-md focus-within:ring-2 focus-within:ring-cyber focus-within:border-transparent"
-                            id=":r0:-form-item"
-                            aria-describedby=":r0:-form-item-description"
-                            aria-invalid="false"
-                        >
+                        <label className="text-sm font-medium">Password</label>
+                        <div className="flex p-1 items-center border mt-2 border-gray-700 rounded-md focus-within:ring-2 focus-within:ring-cyber">
                             <Lock className="mx-2" width={20} height={20} />
                             <input
-                                className="flex h-10 w-full rounded-md border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm border-0 focus-visible:ring-0"
+                                className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-base md:text-sm border-0 focus-visible:ring-0"
                                 placeholder="**********"
                                 type="password"
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                required={true}
+                                required
                             />
                         </div>
                     </div>
+
                     <button
-                        className="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 text-primary-foreground h-10 px-4 py-2 w-full bg-cyber hover:bg-cyber/90 mt-2"
+                        className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium h-10 px-4 py-2 w-full bg-cyber text-white hover:bg-cyber/90 mt-2 disabled:opacity-50"
                         type="submit"
-                        onClick={handleSubmit}
+                        disabled={isLoadingLogin}
                     >
-                        <LogIn />
-                        <span className="flex items-center"> Login</span>
+                        {isLoadingLogin ? (
+                            <>
+                                <Loader2 className="animate-spin" />
+                                Logging in...
+                            </>
+                        ) : (
+                            <>
+                                <LogIn />
+                                <span>Login</span>
+                            </>
+                        )}
                     </button>
                 </form>
-                <div className="mt-6 text-center text-sm">
-                    <p className="text-gray-400">
-                        Forget Password?{" "}
-                        <a className="text-cyber hover:underline" href="/login">
-                            Forgot Password
-                        </a>
-                    </p>
+
+                <div className="mt-6 text-center text-sm text-gray-400">
+                    Forget Password?{" "}
+                    <a
+                        className="text-cyber hover:underline"
+                        href="/forgot-password"
+                    >
+                        Reset Password
+                    </a>
                 </div>
-                <div className="mt-6 text-center text-sm">
-                    <p className="text-gray-400">
-                        Don't have an account?{" "}
-                        <a className="text-cyber hover:underline" href="/login">
-                            Register
-                        </a>
-                    </p>
+                <div className="mt-2 text-center text-sm text-gray-400">
+                    Don't have an account?{" "}
+                    <a className="text-cyber hover:underline" href="/register">
+                        Register
+                    </a>
                 </div>
             </div>
         </div>

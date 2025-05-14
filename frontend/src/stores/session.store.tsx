@@ -8,6 +8,8 @@ interface SessionState {
     hasUpdatedBefore: boolean;
     isLoading: boolean;
     isError: boolean;
+    isLoadingAnswer: boolean;
+    selectedOption: string | null;
     message: string | null;
     fetchSession: (id: string) => Promise<void>;
     submitAnswer: (id: string, answer: string) => Promise<void>;
@@ -30,6 +32,8 @@ const initialData = {
     hasUpdatedBefore: false,
     isLoading: false,
     isError: false,
+    isLoadingAnswer: false,
+    selectedOption: null,
     message: null,
 };
 
@@ -75,7 +79,12 @@ const useSessionStore = create<SessionState>((set, get) => ({
     },
 
     async submitAnswer(id: string, answer: string) {
-        set({ isLoading: true, isError: false, message: null });
+        set({
+            isLoadingAnswer: true,
+            isError: false,
+            message: null,
+            selectedOption: answer,
+        });
         try {
             const response = await ExamApi.nextQuestion(id, answer);
             const data = response.data.data;
@@ -90,19 +99,17 @@ const useSessionStore = create<SessionState>((set, get) => ({
         } catch (error: any) {
             set({ isError: true, message: error.message });
         } finally {
-            set({ isLoading: false });
+            set({ isLoadingAnswer: false, selectedOption: null });
         }
     },
 
     async endSession(id: string) {
-        set({ isLoading: true, isError: false, message: null });
+        set({ isError: false, message: null });
         try {
             await ExamApi.endSession(id);
             set({ ...initialData });
         } catch (error: any) {
             set({ isError: true, message: error.message });
-        } finally {
-            set({ isLoading: false });
         }
     },
 }));

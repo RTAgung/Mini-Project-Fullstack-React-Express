@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Timer } from "lucide-react";
+import { Loader2, Timer } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useExamDetailStore from "../stores/exam_detail.store";
@@ -11,8 +11,16 @@ export default function ExamDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
     const { updateData } = useSessionStore();
-    const { exam, sessions, fetchExamDetail, startSession, endExam } =
-        useExamDetailStore();
+    const {
+        exam,
+        sessions,
+        isLoading,
+        isError,
+        fetchExamDetail,
+        startSession,
+        endExam,
+    } = useExamDetailStore();
+    const [isStartingSession, setIsStartingSession] = useState(false);
 
     const [countdown, setCountdown] = useState("00:00:00");
 
@@ -21,6 +29,12 @@ export default function ExamDetail() {
             await endExam(id);
         }
     }, [id, endExam]);
+
+    useEffect(() => {
+        if (isError) {
+            navigate("/exam", { replace: true });
+        }
+    }, [isError, navigate]);
 
     useEffect(() => {
         if (id) {
@@ -59,18 +73,52 @@ export default function ExamDetail() {
         isCompleted: boolean,
         sessionIdx: number
     ) => {
-        if (id) {
-            if (isCompleted) {
-                navigate(`/exam/${id}/session/review/${sessionIdx}/0`);
-            } else {
+        if (!id) {
+            navigate("/exam", { replace: true });
+            return;
+        }
+
+        if (isCompleted) {
+            navigate(`/exam/${id}/session/review/${sessionIdx}/0`);
+        } else {
+            try {
+                // TODO: refactor architecture, using state management to handle loading and updateData response
+                setIsStartingSession(true);
                 const response = await startSession(id);
                 await updateData(response);
                 navigate(`/exam/${id}/session`);
+            } catch (err) {
+                console.error("Failed to start session", err);
+            } finally {
+                setIsStartingSession(false);
             }
-        } else {
-            navigate("/exam", { replace: true });
         }
     };
+
+    if (isLoading) {
+        return (
+            <BasePage>
+                <div className="flex justify-center items-center h-[70vh]">
+                    <Loader2 className="animate-spin text-cyber w-10 h-10" />
+                </div>
+            </BasePage>
+        );
+    }
+
+    let buttonContent: React.ReactNode;
+
+    if (isStartingSession) {
+        buttonContent = (
+            <>
+                <Loader2 className="animate-spin w-4 h-4" />
+                Starting...
+            </>
+        );
+    } else if (exam.status === "in-progress") {
+        buttonContent = "Start Session";
+    } else {
+        buttonContent = "Review";
+    }
 
     return (
         <BasePage>
@@ -194,16 +242,21 @@ export default function ExamDetail() {
                                             index
                                         )
                                     }
-                                    className={`cursor-pointer mt-3 w-full py-2 px-3 text-sm font-medium rounded-lg transition-colors 
+                                    disabled={isStartingSession}
+                                    className={`cursor-pointer mt-3 w-full py-2 px-3 text-sm font-medium rounded-lg transition-colors flex justify-center items-center gap-2
                                         ${
                                             exam.status === "in-progress"
                                                 ? "bg-cyber hover:bg-cyber/90 text-white"
                                                 : "bg-gray-700 hover:bg-gray-600 text-white"
-                                        }`}
+                                        }
+                                        ${
+                                            isStartingSession
+                                                ? "opacity-60 cursor-not-allowed"
+                                                : ""
+                                        }
+                                    `}
                                 >
-                                    {exam.status === "in-progress"
-                                        ? "Start Session"
-                                        : "Review"}
+                                    {buttonContent}
                                 </button>
                             )}
                         </div>

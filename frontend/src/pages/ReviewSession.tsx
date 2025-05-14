@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import BasePage from "./BasePage";
 import { useNavigate, useParams } from "react-router-dom";
 import useReviewSessionStore from "../stores/review_session.store";
+import { Loader2 } from "lucide-react";
 
 export default function ReviewSession() {
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function ReviewSession() {
     const id = params.id;
     const sessionIdx = Number(params.sessionIdx);
     const questionIdx = Number(params.questionIdx);
-    const { isError, session, question, fetchReviewSession } =
+    const { isLoading, isError, session, question, fetchReviewSession } =
         useReviewSessionStore();
 
     useEffect(() => {
@@ -89,75 +90,88 @@ export default function ReviewSession() {
                 </div>
 
                 {/* Question Card */}
-                <div className="bg-gray-900 p-6 rounded-xl border border-cyber space-y-6 relative">
+                <div className="bg-gray-900 p-6 rounded-xl border border-cyber space-y-6 relative min-h-[300px]">
+                    {/* Loading Overlay */}
+                    {isLoading && (
+                        <div className="absolute inset-0 bg-opacity-100 z-10 flex items-center justify-center rounded-xl">
+                            <Loader2 className="animate-spin text-cyber w-10 h-10" />
+                        </div>
+                    )}
+
                     {/* Question Number Label */}
-                    <div className="absolute -top-[1px] -left-[1px] border border-cyber bg-gray-900 px-3 py-1 rounded-tl-xl text-xl text-cyber font-semibold">
+                    <div className="absolute -top-[1px] -left-[1px] border border-cyber bg-gray-900 px-3 py-1 rounded-tl-xl text-xl text-cyber font-semibold z-0">
                         {questionIdx + 1}
                     </div>
 
-                    {/* Question Prompt */}
-                    <div className="space-y-2 pt-4">
-                        <div className="flex items-center justify-center">
-                            <p className="text-white text-center">
-                                Look for the missing symbol
+                    <div
+                        className={
+                            isLoading ? "opacity-50 pointer-events-none" : ""
+                        }
+                    >
+                        {/* Question Prompt */}
+                        <div className="space-y-2 pt-4">
+                            <div className="flex items-center justify-center">
+                                <p className="text-white text-center">
+                                    Look for the missing symbol
+                                </p>
+                            </div>
+                            <div className="flex gap-4 justify-center mt-6">
+                                {question.sequence.map(
+                                    (char: string, idx: number) => (
+                                        <span
+                                            key={char + idx}
+                                            className="w-24 h-16 flex items-center justify-center text-3xl font-semibold text-white border border-gray-500 rounded-md bg-gray-700"
+                                        >
+                                            {char}
+                                        </span>
+                                    )
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Option Label */}
+                        <div className="flex mt-12">
+                            <p className="text-sm text-gray-400">
+                                Option:{" "}
+                                {question.isCorrect ? (
+                                    <span className="text-green-400">
+                                        ✔ Correct
+                                    </span>
+                                ) : (
+                                    <span className="text-red-400">
+                                        ✘ Incorrect
+                                    </span>
+                                )}
                             </p>
                         </div>
-                        <div className="flex gap-4 justify-center mt-6">
-                            {question.sequence.map(
-                                (char: string, idx: number) => (
-                                    <span
-                                        key={char + idx}
-                                        className="w-24 h-16 flex items-center justify-center text-3xl font-semibold text-white border border-gray-500 rounded-md bg-gray-700"
+
+                        {/* Answer Options */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-3">
+                            {question.options.map(
+                                (option: string, index: number) => (
+                                    <div
+                                        key={option + index}
+                                        className={`py-3 rounded-md text-2xl font-semibold transition border text-center relative ${getOptionClass(
+                                            option
+                                        )}`}
                                     >
-                                        {char}
-                                    </span>
+                                        {option}
+
+                                        {option === question.userAnswer && (
+                                            <span
+                                                className={`absolute -top-2 -right-2 text-xs px-2 py-[2px] rounded-full font-medium ${
+                                                    question.isCorrect
+                                                        ? "bg-green-500 text-white"
+                                                        : "bg-red-500 text-white"
+                                                }`}
+                                            >
+                                                {question.isCorrect ? "✔" : "✘"}
+                                            </span>
+                                        )}
+                                    </div>
                                 )
                             )}
                         </div>
-                    </div>
-
-                    {/* Option Label */}
-                    <div className="flex mt-12">
-                        <p className="text-sm text-gray-400">
-                            Option:{" "}
-                            {question.isCorrect ? (
-                                <span className="text-green-400">
-                                    ✔ Correct
-                                </span>
-                            ) : (
-                                <span className="text-red-400">
-                                    ✘ Incorrect
-                                </span>
-                            )}
-                        </p>
-                    </div>
-
-                    {/* Answer Options */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                        {question.options.map(
-                            (option: string, index: number) => (
-                                <div
-                                    key={option + index}
-                                    className={`py-3 rounded-md text-2xl font-semibold transition border text-center relative ${getOptionClass(
-                                        option
-                                    )}`}
-                                >
-                                    {option}
-
-                                    {option === question.userAnswer && (
-                                        <span
-                                            className={`absolute -top-2 -right-2 text-xs px-2 py-[2px] rounded-full font-medium ${
-                                                question.isCorrect
-                                                    ? "bg-green-500 text-white"
-                                                    : "bg-red-500 text-white"
-                                            }`}
-                                        >
-                                            {question.isCorrect ? "✔" : "✘"}
-                                        </span>
-                                    )}
-                                </div>
-                            )
-                        )}
                     </div>
                 </div>
 

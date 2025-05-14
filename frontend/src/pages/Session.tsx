@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
 import BasePage from "./BasePage";
-import { Timer } from "lucide-react";
+import { Loader2, Timer } from "lucide-react";
 import useSessionStore from "../stores/session.store";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function Session() {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { session, question, fetchSession, submitAnswer, endSession } =
-        useSessionStore();
+    const {
+        session,
+        question,
+        isLoading,
+        isError,
+        isLoadingAnswer,
+        selectedOption,
+        fetchSession,
+        submitAnswer,
+        endSession,
+    } = useSessionStore();
     const [countdown, setCountdown] = useState("00:00:00");
 
     useEffect(() => {
@@ -25,8 +34,13 @@ export default function Session() {
     }, [id, endSession, navigate]);
 
     useEffect(() => {
+        if (isError) {
+            navigate("/exam", { replace: true });
+        }
+    }, [isError, navigate]);
+
+    useEffect(() => {
         if (id) {
-            console.log("useEffect", id);
             fetchSession(id);
         } else {
             navigate("/exam", { replace: true });
@@ -60,6 +74,16 @@ export default function Session() {
             submitAnswer(id, answer);
         }
     };
+
+    if (isLoading) {
+        return (
+            <BasePage>
+                <div className="flex justify-center items-center h-[70vh]">
+                    <Loader2 className="animate-spin text-cyber w-10 h-10" />
+                </div>
+            </BasePage>
+        );
+    }
 
     return (
         <BasePage>
@@ -103,51 +127,73 @@ export default function Session() {
                 </div>
 
                 {/* Question Card */}
-                <div className="bg-gray-900 p-6 rounded-xl border border-cyber space-y-6 relative">
+                <div className="bg-gray-900 p-6 rounded-xl border border-cyber space-y-6 relative min-h-[300px]">
+                    {/* Overlay for Answer Loading */}
+                    {isLoadingAnswer && (
+                        <div className="absolute inset-0 bg-opacity-60 z-10 flex items-center justify-center rounded-xl">
+                            <Loader2 className="animate-spin text-cyber w-10 h-10" />
+                        </div>
+                    )}
+
                     {/* Question Number Label */}
-                    <div className="absolute -top-[1px] -left-[1px] border border-cyber bg-gray-900 px-3 py-1 rounded-tl-xl text-xl text-cyber font-semibold">
+                    <div className="absolute -top-[1px] -left-[1px] border border-cyber bg-gray-900 px-3 py-1 rounded-tl-xl text-xl text-cyber font-semibold z-0">
                         {session.totalCorrect + session.totalIncorrect + 1}
                     </div>
 
-                    {/* Question Prompt */}
-                    <div className="space-y-2 pt-4">
-                        <div className="flex items-center justify-center">
-                            <p className="text-white text-center">
-                                Look for the missing symbol
-                            </p>
+                    {/* Content with opacity when loadingAnswer */}
+                    <div
+                        className={
+                            isLoadingAnswer
+                                ? "opacity-50 pointer-events-none"
+                                : ""
+                        }
+                    >
+                        {/* Question Prompt */}
+                        <div className="space-y-2 pt-4">
+                            <div className="flex items-center justify-center">
+                                <p className="text-white text-center">
+                                    Look for the missing symbol
+                                </p>
+                            </div>
+                            <div className="flex gap-4 justify-center mt-6">
+                                {question.sequence.map(
+                                    (char: string, idx: number) => (
+                                        <span
+                                            key={char + idx}
+                                            className="w-24 h-16 flex items-center justify-center text-3xl font-semibold text-white border border-gray-500 rounded-md bg-gray-700"
+                                        >
+                                            {char}
+                                        </span>
+                                    )
+                                )}
+                            </div>
                         </div>
-                        <div className="flex gap-4 justify-center mt-6">
-                            {question.sequence.map(
-                                (char: string, idx: number) => (
-                                    <span
-                                        key={char + idx}
-                                        className="w-24 h-16 flex items-center justify-center text-3xl font-semibold text-white border border-gray-500 rounded-md bg-gray-700"
+
+                        {/* Option Label */}
+                        <div className="mt-12">
+                            <p className="text-sm text-gray-400">Option:</p>
+                        </div>
+
+                        {/* Answer Options */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mt-3">
+                            {question.options.map(
+                                (option: string, index: number) => (
+                                    <button
+                                        key={option + index}
+                                        onClick={() =>
+                                            handleOptionClick(option)
+                                        }
+                                        className={`cursor-pointer py-3 rounded-md text-2xl font-semibold transition border border-gray-700 ${
+                                            selectedOption === option
+                                                ? "bg-cyber text-white"
+                                                : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                                        }`}
                                     >
-                                        {char}
-                                    </span>
+                                        {option}
+                                    </button>
                                 )
                             )}
                         </div>
-                    </div>
-
-                    {/* Option Label */}
-                    <div className="flex mt-12">
-                        <p className="text-sm text-gray-400">Option:</p>
-                    </div>
-
-                    {/* Answer Options */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                        {question.options.map(
-                            (option: string, index: number) => (
-                                <button
-                                    key={option + index}
-                                    onClick={() => handleOptionClick(option)}
-                                    className="cursor-pointer py-3 rounded-md text-2xl font-semibold transition border bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700"
-                                >
-                                    {option}
-                                </button>
-                            )
-                        )}
                     </div>
                 </div>
             </div>

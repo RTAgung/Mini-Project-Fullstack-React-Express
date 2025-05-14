@@ -87,7 +87,7 @@ const useExamDetailStore = create<ExamDetailState>((set) => ({
     },
 
     async endExam(id: string) {
-        set({ isLoading: true, isError: false, message: null });
+        set({ isError: false, message: null });
         try {
             const response = await ExamApi.endExam(id);
             const data = response.data.data;
@@ -96,8 +96,6 @@ const useExamDetailStore = create<ExamDetailState>((set) => ({
             });
         } catch (error: any) {
             set({ isError: true, message: error.message });
-        } finally {
-            set({ isLoading: false });
         }
     },
 }));
