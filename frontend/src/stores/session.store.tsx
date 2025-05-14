@@ -37,6 +37,29 @@ const initialData = {
     message: null,
 };
 
+const constructSessionData = (response: any) => {
+    const data = response.data.data;
+    const session = data.sessions[data.currentSession];
+    const question = {
+        sequence: session.questions[data.currentQuestion].question.split(""),
+        options: session.questions[data.currentQuestion].option.split(""),
+    };
+
+    const examEnd = new Date(data.endTimeTest);
+    const sessionEnd = new Date(session.endTime);
+    const effectiveEndTime = examEnd < sessionEnd ? examEnd : sessionEnd;
+    console.log(data.endTimeTest);
+    console.log(session.endTime);
+    console.log(effectiveEndTime);
+    return {
+        session: {
+            ...session,
+            endTime: effectiveEndTime.toISOString(),
+        },
+        question,
+    };
+};
+
 const useSessionStore = create<SessionState>((set, get) => ({
     ...initialData,
 
@@ -46,15 +69,9 @@ const useSessionStore = create<SessionState>((set, get) => ({
         set({ isLoading: true, isError: false, message: null });
         try {
             const response = await ExamApi.fetchDataById(id);
-            const data = response.data.data;
-            const session = data.sessions[data.currentSession];
-            const question = {
-                sequence:
-                    session.questions[data.currentQuestion].question.split(""),
-                options:
-                    session.questions[data.currentQuestion].option.split(""),
-            };
-            set({ session, question });
+            set({
+                ...constructSessionData(response),
+            });
         } catch (error: any) {
             set({ isError: true, message: error.message });
         } finally {
@@ -64,15 +81,11 @@ const useSessionStore = create<SessionState>((set, get) => ({
 
     async updateData(response: any) {
         if (response != null) {
-            const data = response.data.data;
-            const session = data.sessions[data.currentSession];
-            const question = {
-                sequence:
-                    session.questions[data.currentQuestion].question.split(""),
-                options:
-                    session.questions[data.currentQuestion].option.split(""),
-            };
-            set({ ...initialData, session, question, hasUpdatedBefore: true });
+            set({
+                ...initialData,
+                ...constructSessionData(response),
+                hasUpdatedBefore: true,
+            });
         } else {
             set({ ...initialData });
         }
@@ -87,15 +100,10 @@ const useSessionStore = create<SessionState>((set, get) => ({
         });
         try {
             const response = await ExamApi.nextQuestion(id, answer);
-            const data = response.data.data;
-            const session = data.sessions[data.currentSession];
-            const question = {
-                sequence:
-                    session.questions[data.currentQuestion].question.split(""),
-                options:
-                    session.questions[data.currentQuestion].option.split(""),
-            };
-            set({ session, question, hasUpdatedBefore: true });
+            set({
+                ...constructSessionData(response),
+                hasUpdatedBefore: true,
+            });
         } catch (error: any) {
             set({ isError: true, message: error.message });
         } finally {

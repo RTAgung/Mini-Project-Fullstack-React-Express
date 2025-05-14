@@ -38,7 +38,7 @@ export default function ExamDetail() {
             toast.warning(message);
             setMessage(null);
         }
-    }, [message]);
+    }, [message, setMessage]);
 
     useEffect(() => {
         if (isError) {
@@ -134,20 +134,22 @@ export default function ExamDetail() {
         <BasePage>
             <div>
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-white">
+                <div className="flex flex-col sm:flex-row sm:justify-between mb-6">
+                    <h1 className="text-2xl font-bold text-white sm:max-w-[calc(100%-220px)]">
                         Exam: {exam.title}
                     </h1>
                     {exam.status === "in-progress" && (
-                        <div className="mt-2 sm:mt-0 bg-yellow-900 text-yellow-400 text-sm px-4 py-2 rounded-lg flex items-center gap-2">
-                            <Timer size={16} />
-                            <span>Remaining: {countdown}</span>
+                        <div>
+                            <div className="mt-2 sm:mt-0 bg-yellow-900 text-yellow-400 text-sm px-4 py-2 rounded-lg flex items-center gap-2 min-w-[220px] max-w-[220px] whitespace-nowrap overflow-hidden">
+                                <Timer size={16} />
+                                <span>Remaining: {countdown}</span>
+                            </div>
                         </div>
                     )}
                 </div>
 
                 {/* Info */}
-                <div className="bg-gray-800 rounded-xl p-5 border border-gray-700 mt-4 text-sm">
+                <div className="bg-gray-800 rounded-xl p-5 border border-gray-700 mt-3 text-sm">
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-6">
                         {/* Left info */}
                         <div className="space-y-2">
