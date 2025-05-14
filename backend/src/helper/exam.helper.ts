@@ -189,7 +189,7 @@ class ExamHelper {
         const accuracyScore: number =
             currentSession.totalCorrect /
             (currentSession.totalCorrect + currentSession.totalIncorrect);
-        currentSession.accuracyScore = parseFloat(accuracyScore.toFixed(3));
+        currentSession.accuracyScore = Math.round(accuracyScore * 1000) / 1000;
 
         currentSession.questions[data.currentQuestion] = currentQuestion;
         currentSession.questions.push(
@@ -263,7 +263,7 @@ class ExamHelper {
         });
         const accuracyScore: number =
             totalAccuracyScore / data.accuracyTest.numberOfSessions;
-        data.totalAccuracyScore = parseFloat(accuracyScore.toFixed(3));
+        data.totalAccuracyScore = Math.round(accuracyScore * 1000) / 1000;
         return data;
     }
 }
