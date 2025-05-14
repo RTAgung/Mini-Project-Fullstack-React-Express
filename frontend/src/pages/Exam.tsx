@@ -55,10 +55,26 @@ function Exam() {
                         key={exam.id}
                         className="group block bg-gray-800 border border-gray-700 p-4 rounded-xl transition hover:shadow-lg hover:border-cyber hover:bg-gray-700"
                     >
-                        <h2 className="text-lg font-semibold text-white mb-1 group-hover:text-cyber">
+                        <h2
+                            className="text-lg font-semibold text-white mb-1 group-hover:text-cyber line-clamp-2"
+                            style={{
+                                WebkitLineClamp: 2,
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                            }}
+                        >
                             {exam.data.title ?? "Title"}
                         </h2>
-                        <p className="text-sm text-gray-400 mb-3">
+                        <p
+                            className="text-sm text-gray-400 mb-3 line-clamp-2"
+                            style={{
+                                WebkitLineClamp: 2,
+                                display: "-webkit-box",
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                            }}
+                        >
                             {exam.data.description ?? "Description"}
                         </p>
                         <div className="flex items-center justify-between text-sm">

@@ -10,6 +10,7 @@ interface ExamDetailState {
     isLoading: boolean;
     isError: boolean;
     message: string | null;
+    setMessage: (message: string | null) => Promise<void>;
     fetchExamDetail: (id: string) => Promise<void>;
     startSession: (id: string) => Promise<any>;
     endExam: (id: string) => Promise<void>;
@@ -58,6 +59,10 @@ const constructExamData: any = (data: any) => {
 
 const useExamDetailStore = create<ExamDetailState>((set) => ({
     ...initialState,
+
+    async setMessage(message: string | null) {
+        set({ message });
+    },
 
     async fetchExamDetail(id: string) {
         set({ isLoading: true, isError: false, message: null });

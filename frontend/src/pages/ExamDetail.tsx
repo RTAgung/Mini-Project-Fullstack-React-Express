@@ -21,6 +21,7 @@ export default function ExamDetail() {
         fetchExamDetail,
         startSession,
         endExam,
+        setMessage,
     } = useExamDetailStore();
     const [isStartingSession, setIsStartingSession] = useState(false);
 
@@ -35,6 +36,7 @@ export default function ExamDetail() {
     useEffect(() => {
         if (message) {
             toast.warning(message);
+            setMessage(null);
         }
     }, [message]);
 
