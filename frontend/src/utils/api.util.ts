@@ -6,6 +6,7 @@ export async function apiFetch<T = any>(
     method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
     body?: any
 ): Promise<T> {
+    // enkrip body before send to api
     const res = await fetch(`${BASE_URL_API}${endpoint}`, {
         method,
         headers: {

@@ -249,7 +249,7 @@ export default function ExamDetail() {
                                 <button
                                     onClick={() =>
                                         handleButtonSessionClick(
-                                            session.status !== "not-started",
+                                            session.status === "completed",
                                             index
                                         )
                                     }
