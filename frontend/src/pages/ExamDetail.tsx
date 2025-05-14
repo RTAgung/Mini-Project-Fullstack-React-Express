@@ -124,8 +124,10 @@ export default function ExamDetail() {
                 Starting...
             </>
         );
-    } else if (exam.status === "in-progress") {
+    } else if (exam.status === "not-started") {
         buttonContent = "Start Session";
+    } else if (exam.status === "in-progress") {
+        buttonContent = "Continue Session";
     } else {
         buttonContent = "Review";
     }
