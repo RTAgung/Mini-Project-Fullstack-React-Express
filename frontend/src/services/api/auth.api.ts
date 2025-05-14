@@ -8,6 +8,10 @@ export default class AuthApi {
         return apiFetch(`${this.URL_API}/login`, "POST", data);
     }
 
+    static async register(data: any) {
+        return apiFetch(`${this.URL_API}/register`, "POST", data);
+    }
+
     static async checkToken() {
         return apiFetch(`${this.URL_API}/check`, "POST");
     }

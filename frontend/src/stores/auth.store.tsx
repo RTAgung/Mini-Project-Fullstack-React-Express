@@ -8,10 +8,13 @@ interface AuthState {
     isLoggedIn: boolean;
     isLoadingLogin: boolean;
     isErrorLogin: boolean;
+    isLoadingRegister: boolean;
+    isErrorRegister: boolean;
     message: string | null;
     userName: string;
     hasCheckLogin: boolean;
     login: (email: string, password: string) => Promise<void>;
+    register: (data: any) => Promise<boolean>;
     logout: () => Promise<void>;
     checkLogin: () => Promise<void>;
 }
@@ -44,6 +47,8 @@ const useAuthStore = create<AuthState>((set, get) => ({
     isLoggedIn: false,
     isLoadingLogin: false,
     isErrorLogin: false,
+    isLoadingRegister: false,
+    isErrorRegister: false,
     message: null,
     userName: "",
     hasCheckLogin: false,
@@ -68,6 +73,26 @@ const useAuthStore = create<AuthState>((set, get) => ({
             console.error(error);
         } finally {
             set({ isLoadingLogin: false });
+        }
+    },
+    register: async (data: any) => {
+        set({
+            isLoadingRegister: true,
+            isErrorRegister: false,
+            message: null,
+        });
+        try {
+            await AuthApi.register(data);
+            set({ isLoadingRegister: false });
+            return true;
+        } catch (error: any) {
+            set({
+                isLoadingRegister: false,
+                isErrorRegister: true,
+                message: "Register failed",
+            });
+            console.error(error);
+            return false;
         }
     },
     logout: async () => {

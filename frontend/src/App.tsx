@@ -11,6 +11,7 @@ import { Toaster } from "react-hot-toast";
 import ExamDetail from "./pages/ExamDetail";
 import Session from "./pages/Session";
 import ReviewSession from "./pages/ReviewSession";
+import Register from "./pages/Register";
 
 function App() {
     return (
@@ -58,10 +59,10 @@ function App() {
                     </Route>
                     <Route element={<AuthRoute />}>
                         <Route path="/login" element={<Login />}></Route>
-                        <Route path="/register" element={<Login />}></Route>
+                        <Route path="/register" element={<Register />}></Route>
                         <Route
                             path="/forgot_password"
-                            element={<Login />}
+                            element={<Register />}
                         ></Route>
                     </Route>
                     <Route element={<PublicRoute />}>

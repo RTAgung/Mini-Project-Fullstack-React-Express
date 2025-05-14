@@ -1,7 +1,7 @@
 import { Lock, LogIn, Loader2, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuthStore from "../stores/auth.store";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "../utils/toast.util";
 
 function Login() {
@@ -36,7 +36,7 @@ function Login() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await login(formData.email, formData.password);
+        login(formData.email, formData.password);
     };
 
     return (
@@ -111,18 +111,18 @@ function Login() {
 
                 <div className="mt-6 text-center text-sm text-gray-400">
                     Forget Password?{" "}
-                    <a
+                    <Link
                         className="text-cyber hover:underline"
-                        href="/forgot-password"
+                        to="/forgot_password"
                     >
                         Reset Password
-                    </a>
+                    </Link>
                 </div>
                 <div className="mt-2 text-center text-sm text-gray-400">
                     Don't have an account?{" "}
-                    <a className="text-cyber hover:underline" href="/register">
+                    <Link className="text-cyber hover:underline" to="/register">
                         Register
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
